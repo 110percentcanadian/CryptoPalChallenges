@@ -1,3 +1,3 @@
 
 # main program/script for the cyptopals challenges
-hexString = f4
+hexString = 0xf4762
