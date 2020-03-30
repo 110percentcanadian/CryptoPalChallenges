@@ -2,7 +2,7 @@
 # main program/script for the cyptopals challenges
 #might evolve into a few methods and main or something
 import codecs
-
+import numpy as np
 
 def hexString2Base64(wrkStr):
     hexString = wrkStr
@@ -28,6 +28,16 @@ def XORsomeHEXES(hexOne,hexTwo):
     result = codecs.encode(result,'hex_codec')
     return result
 
+def singXorCypher(hexStr,singStr):
+    cipherText=codecs.decode(codecs.encode(hexStr),'hex_codec')
+    charKey=codecs.decode(codecs.encode(singStr),'hex_codec')
+    resultingStr=b''
+    for byt in cipherText:
+        resultingStr+=bytes([byt^charKey])
+    return resultingStr
+
+def EnglishDetector(yourEnglish):
+    x=yourEnglish
 
 if __name__ == '__main__':
 
@@ -39,4 +49,8 @@ if __name__ == '__main__':
     firstHex = "1c0111001f010100061a024b53535009181c"
     secHex   = "686974207468652062756c6c277320657965"
     resultHex=XORsomeHEXES(firstHex,secHex)
-    print(resultHex)#answer for challenge 2, encoded in hex
+    print(resultHex) #answer for challenge 2, encoded in hex
+
+    #Challenge 3 - Single byte XOR ciper
+    LetterFreq = np.genfromtxt('letterFrequency.csv', delimiter=",")
+    #pls remember 0 indexed arrays like the rest of the owrld
