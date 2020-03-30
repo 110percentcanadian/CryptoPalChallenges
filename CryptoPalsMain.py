@@ -3,6 +3,7 @@
 #might evolve into a few methods and main or something
 import codecs
 import numpy as np
+import pandas as pd
 
 def hexString2Base64(wrkStr):
     hexString = wrkStr
@@ -52,5 +53,6 @@ if __name__ == '__main__':
     print(resultHex) #answer for challenge 2, encoded in hex
 
     #Challenge 3 - Single byte XOR ciper
-    LetterFreq = np.genfromtxt('letterFrequency.csv', delimiter=",")
+    LetterFreq = pd.read_csv('letterFrequency.csv', header=None, delimiter=",")
     #pls remember 0 indexed arrays like the rest of the owrld
+    print(LetterFreq[0])
