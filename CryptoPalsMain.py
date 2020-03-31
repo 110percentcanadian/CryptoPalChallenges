@@ -35,31 +35,50 @@ def singXorCypher(hexStr,singStr):
     charKey=''
     for i in range(p):
         charKey += singStr
-
-    print(charKey)
+    #can just use singStr*p for the above code, python str be like that
+    # print(charKey)
     cipherText=codecs.decode(codecs.encode(hexStr),'hex_codec')
     charKeyString=codecs.encode(codecs.encode(charKey),'hex_codec')
     resultingStr=b''
-    print(cipherText)
+    # print(cipherText)
     for byt,charKeyF in zip(cipherText,charKeyString):
         resultingStr+=bytes([(byt)^charKeyF])
-    print(resultingStr)
+    # print(resultingStr)
     english =codecs.encode(resultingStr, 'hex_codec')
-    print(english)
+
 
     return resultingStr
 
 
-def EnglishDetector(yourEnglish,LetterFreqTable):
-    x=yourEnglish
+def EnglishDetector(yourEnglish, LetterFreq):
+    yourEngFreq = np.zeros(26,dtype=int)
+    yourEnglish = str(yourEnglish)
+    StrLength = len(yourEnglish)
+    for i in range(StrLength): #goes through numbers for length of string
+        for j in range(25): #goes through each letter of alphabet
+            k=LetterFreq.loc[j,'letters']
+            if k == str(yourEnglish[i]): #compare each letter
+                yourEngFreq[j] +=1
+    print(yourEnglish)
+    print(yourEngFreq)
+    fullSum=yourEngFreq.sum()-yourEngFreq[23]
+    return(fullSum)
 
-def SolveChallenge3Pls(HexCode):
 
+
+
+def SolveChallenge3Pls(HexCode,LetterFreq):
+    bigSum = 0;
     for hexNum in range(0xFF):
         print(chr(hexNum))
         #charKey = b''+str(hex(hexNum))
         newEnglish=singXorCypher(HexCode,chr(hexNum))
-        #EnglishDetector(newEnglish)
+        newSum = EnglishDetector(newEnglish,LetterFreq)
+        if newSum>bigSum:
+            bigSum=newSum
+            bigStr=newEnglish
+
+    return(bigStr)
 
 if __name__ == '__main__':
 
@@ -75,9 +94,17 @@ if __name__ == '__main__':
 
     #Challenge 3 - Single byte XOR ciper
     LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
+
+    print((LetterFreq.loc[0,'letters']))
+
     #pls remember 0 indexed arrays like the rest of the owrld
     encodedHex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    decodedMessage=SolveChallenge3Pls(encodedHex)
+    decodedMessage=SolveChallenge3Pls(encodedHex,LetterFreq)
     singleString=str(LetterFreq.loc[0,'letters'])
     singlenoquoteString=str(LetterFreq.loc[0,'fuckyou'])
-
+    # print((LetterFreq.loc[0,'letters']))
+    # stringer=str('a')
+    # if LetterFreq.loc[0,'letters'] == stringer:
+    #     print('itworks!')
+    print('\n')
+    print(decodedMessage)
