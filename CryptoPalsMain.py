@@ -30,15 +30,36 @@ def XORsomeHEXES(hexOne,hexTwo):
     return result
 
 def singXorCypher(hexStr,singStr):
+    charKey=singStr
+    p=int(len(hexStr)/2)
+    charKey=''
+    for i in range(p):
+        charKey += singStr
+
+    print(charKey)
     cipherText=codecs.decode(codecs.encode(hexStr),'hex_codec')
-    charKey=codecs.decode(codecs.encode(singStr),'hex_codec')
+    charKeyString=codecs.encode(codecs.encode(charKey),'hex_codec')
     resultingStr=b''
-    for byt in cipherText:
-        resultingStr+=bytes([byt^charKey])
+    print(cipherText)
+    for byt,charKeyF in zip(cipherText,charKeyString):
+        resultingStr+=bytes([(byt)^charKeyF])
+    print(resultingStr)
+    english =codecs.encode(resultingStr, 'hex_codec')
+    print(english)
+
     return resultingStr
+
 
 def EnglishDetector(yourEnglish,LetterFreqTable):
     x=yourEnglish
+
+def SolveChallenge3Pls(HexCode):
+
+    for hexNum in range(0xFF):
+        print(chr(hexNum))
+        #charKey = b''+str(hex(hexNum))
+        newEnglish=singXorCypher(HexCode,chr(hexNum))
+        #EnglishDetector(newEnglish)
 
 if __name__ == '__main__':
 
@@ -55,11 +76,8 @@ if __name__ == '__main__':
     #Challenge 3 - Single byte XOR ciper
     LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
     #pls remember 0 indexed arrays like the rest of the owrld
-
-    print(LetterFreq)
-    print(LetterFreq.dtypes)
-    print(LetterFreq.loc[0,'letters'])
+    encodedHex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+    decodedMessage=SolveChallenge3Pls(encodedHex)
     singleString=str(LetterFreq.loc[0,'letters'])
     singlenoquoteString=str(LetterFreq.loc[0,'fuckyou'])
-    print(singleString)
-    print(singlenoquoteString)
+
