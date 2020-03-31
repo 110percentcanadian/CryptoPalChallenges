@@ -37,7 +37,7 @@ def singXorCypher(hexStr,singStr):
         resultingStr+=bytes([byt^charKey])
     return resultingStr
 
-def EnglishDetector(yourEnglish):
+def EnglishDetector(yourEnglish,LetterFreqTable):
     x=yourEnglish
 
 if __name__ == '__main__':
@@ -53,6 +53,13 @@ if __name__ == '__main__':
     print(resultHex) #answer for challenge 2, encoded in hex
 
     #Challenge 3 - Single byte XOR ciper
-    LetterFreq = pd.read_csv('letterFrequency.csv', names = ["letters","Frequency","empty","wut"], delimiter="," )
+    LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
     #pls remember 0 indexed arrays like the rest of the owrld
+
     print(LetterFreq)
+    print(LetterFreq.dtypes)
+    print(LetterFreq.loc[0,'letters'])
+    singleString=str(LetterFreq.loc[0,'letters'])
+    singlenoquoteString=str(LetterFreq.loc[0,'fuckyou'])
+    print(singleString)
+    print(singlenoquoteString)
