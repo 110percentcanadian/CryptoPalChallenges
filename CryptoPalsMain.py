@@ -53,6 +53,6 @@ if __name__ == '__main__':
     print(resultHex) #answer for challenge 2, encoded in hex
 
     #Challenge 3 - Single byte XOR ciper
-    LetterFreq = pd.read_csv('letterFrequency.csv', header=None, delimiter=",")
+    LetterFreq = pd.read_csv('letterFrequency.csv', names = ["letters","Frequency","empty","wut"], delimiter="," )
     #pls remember 0 indexed arrays like the rest of the owrld
-    print(LetterFreq[0])
+    print(LetterFreq)
