@@ -116,6 +116,8 @@ def EnglishDetector4(yourEnglish, LetterFreq):
     return(engScore)
 
 def repeatingXORencryption(KEY, text)
+    crypt  = KEY*len((text)/len(KEY))
+
 
 
 if __name__ == '__main__':
@@ -133,32 +135,32 @@ if __name__ == '__main__':
     #Challenge 3 - Single byte XOR ciper
     LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
     #pls remember 0 indexed arrays like the rest of the owrld
-    encodedHex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    print(codecs.decode(encodedHex,'hex_codec'))
-    decodedMessage,theKey=SolveChallenge3Pls(encodedHex,LetterFreq)
-    print(decodedMessage)
-    print(theKey)
+    # encodedHex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+    # print(codecs.decode(encodedHex,'hex_codec'))
+    # decodedMessage,theKey=SolveChallenge3Pls(encodedHex,LetterFreq)
+    # print(decodedMessage)
+    # print(theKey)
 
     #challenge 4 - single byte XOR in big ole file
-    cypherFile=pd.read_csv('mysteryText.txt',names=["cyphers"], delimiter=",")
-    singleSolve=np.zeros(326,dtype=bytearray)
-    theKey = np.zeros(326,dtype=str)
-    for i in range(326):
-        singleSolve[i],theKey[i] =SolveChallenge4Pls(cypherFile.loc[i,'cyphers'],LetterFreq)
-        print(i)
-    resultFinder = 1000;
-
-    for i in range(326):
-        if singleSolve[i]!='':
-            bigSum = EnglishDetector4(singleSolve[i],LetterFreq)
-            if resultFinder>bigSum:
-                resultFinder=bigSum
-                cipherSolution = singleSolve[i]
-
-    print(cipherSolution)
-    testing = codecs.decode(codecs.encode(decodedMessage,'hex_codec'))
-    testFrom3 = codecs.encode(decodedMessage,'hex_codec')
-    print(testing)
+    # cypherFile=pd.read_csv('mysteryText.txt',names=["cyphers"], delimiter=",")
+    # singleSolve=np.zeros(326,dtype=bytearray)
+    # theKey = np.zeros(326,dtype=str)
+    # for i in range(326):
+    #     singleSolve[i],theKey[i] =SolveChallenge4Pls(cypherFile.loc[i,'cyphers'],LetterFreq)
+    #     print(i)
+    # resultFinder = 1000;
+    #
+    # for i in range(326):
+    #     if singleSolve[i]!='':
+    #         bigSum = EnglishDetector4(singleSolve[i],LetterFreq)
+    #         if resultFinder>bigSum:
+    #             resultFinder=bigSum
+    #             cipherSolution = singleSolve[i]
+    #
+    # print(cipherSolution)
+    # testing = codecs.decode(codecs.encode(decodedMessage,'hex_codec'))
+    # testFrom3 = codecs.encode(decodedMessage,'hex_codec')
+    # print(testing)
 
     #Challenge 5 Repeating XOR implementation leeetsss goooo
     KEY = 'ICE'
