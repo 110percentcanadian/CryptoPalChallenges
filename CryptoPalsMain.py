@@ -9,6 +9,7 @@ def hexString2Base64(wrkStr):
     hexString = wrkStr
     #now decode is in the codecs module, still built in
     BaseNewStr = codecs.encode(hexString)
+    print(BaseNewStr)
     deCodeString = codecs.decode(BaseNewStr,'hex_codec')
     Base64Str = codecs.encode(deCodeString,'base64_codec')
     print(deCodeString)
@@ -17,7 +18,7 @@ def hexString2Base64(wrkStr):
 def XORsomeHEXES(hexOne,hexTwo):
     decodHexOne = codecs.decode(codecs.encode(hexOne),'hex_codec')
     decodHexTwo = codecs.decode(codecs.encode(hexTwo),'hex_codec')
-    codecs.encode(hexTwo)
+
     print(decodHexOne)
     print(decodHexTwo)
     result=b''
@@ -28,44 +29,6 @@ def XORsomeHEXES(hexOne,hexTwo):
     print(result)
     result = codecs.encode(result,'hex_codec')
     return result
-
-def singXorCypher(hexStr,singStr):
-    charKey=singStr
-    p=int(len(hexStr)/2)
-    charKey=''
-    for i in range(p):
-        charKey += singStr
-    #can just use singStr*p for the above code, python str be like that
-    # print(charKey)
-    cipherText=codecs.decode(codecs.encode(hexStr),'hex_codec')
-    charKeyString=codecs.encode(codecs.encode(charKey),'hex_codec')
-    resultingStr=b''
-    # print(cipherText)
-    for byt,charKeyF in zip(cipherText,charKeyString):
-        resultingStr+=bytes([(byt)^charKeyF])
-    # print(resultingStr)
-    english =codecs.encode(resultingStr, 'hex_codec')
-
-
-    return resultingStr
-
-
-def EnglishDetector(yourEnglish, LetterFreq):
-    yourEngFreq = np.zeros(26,dtype=int)
-    yourEnglish = str(yourEnglish)
-    StrLength = len(yourEnglish)
-    for i in range(StrLength): #goes through numbers for length of string
-        for j in range(25): #goes through each letter of alphabet
-            k=LetterFreq.loc[j,'letters']
-            if k == str(yourEnglish[i]): #compare each letter
-                yourEngFreq[j] +=1
-    print(yourEnglish)
-    print(yourEngFreq)
-    fullSum=yourEngFreq.sum()-yourEngFreq[23]
-    return(fullSum)
-
-
-
 
 def SolveChallenge3Pls(HexCode,LetterFreq):
     bigSum = 0;
@@ -79,6 +42,43 @@ def SolveChallenge3Pls(HexCode,LetterFreq):
             bigStr=newEnglish
 
     return(bigStr)
+
+def singXorCypher(hexStr,singStr):
+    charKey=singStr*int(len(hexStr)/2)
+    #can just use singStr*p for the above code, python str be like that
+    print(charKey)
+    cipherText=codecs.encode(hexStr)
+    intermediate = codecs.encode(charKey)
+    print(intermediate)
+    print(cipherText)
+    print('that was it')
+    charKeyString=intermediate
+    #charKeyString=codecs.decode(intermediate,'hex_codec')
+    resultingStr=b''
+    # print(cipherText)
+    for byt,charKeyF in zip(cipherText,charKeyString):
+        resultingStr+=bytes([(byt)^charKeyF])
+    # print(resultingStr)
+    english =codecs.encode(resultingStr, 'hex_codec')
+
+
+    return english
+
+
+def EnglishDetector(yourEnglish, LetterFreq):
+    yourEngFreq = np.zeros(26,dtype=int)
+    yourEnglish = str(yourEnglish)
+    StrLength = len(yourEnglish)
+    for i in range(StrLength): #goes through numbers for length of string
+        for j in range(25): #goes through each letter of alphabet
+            k=LetterFreq.loc[j,'letters']
+            if k == str(yourEnglish[i]): #compare each letter
+                yourEngFreq[j] +=1
+    print(yourEnglish)
+    print(yourEngFreq)
+    fullSum=yourEngFreq.sum()-yourEngFreq[:5].sum()
+    return(fullSum)
+
 
 if __name__ == '__main__':
 
@@ -108,3 +108,7 @@ if __name__ == '__main__':
     #     print('itworks!')
     print('\n')
     print(decodedMessage)
+    # newArr=np.zeros(26,dtype='float64')
+    # newArr=LetterFreq['Frequency']
+    # print(newArr)
+    # print(newArr[:2])
