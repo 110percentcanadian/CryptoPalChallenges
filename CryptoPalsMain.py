@@ -31,13 +31,13 @@ def XORsomeHEXES(hexOne,hexTwo):
     return result
 
 def SolveChallenge3Pls(HexCode,LetterFreq):
-    bigSum = 0;
+    bigSum = 1000;
     for hexNum in range(0xFF):
         print(chr(hexNum))
         #charKey = b''+str(hex(hexNum))
         newEnglish=singXorCypher(HexCode,chr(hexNum))
         newSum = EnglishDetector(newEnglish,LetterFreq)
-        if newSum>bigSum:
+        if newSum<bigSum:
             bigSum=newSum
             bigStr=newEnglish
 
@@ -45,24 +45,23 @@ def SolveChallenge3Pls(HexCode,LetterFreq):
 
 def singXorCypher(hexStr,singStr):
     charKey=singStr*int(len(hexStr)/2)
-    #can just use singStr*p for the above code, python str be like that
-    print(charKey)
+    #print(charKey)
     cipherText=codecs.encode(hexStr)
-    intermediate = codecs.encode(charKey)
-    print(intermediate)
-    print(cipherText)
-    print('that was it')
+    intermediate = codecs.encode(codecs.encode(charKey),'hex_codec')
+    # print(intermediate)
+    # print(cipherText)
+    # print('that was it')
     charKeyString=intermediate
     #charKeyString=codecs.decode(intermediate,'hex_codec')
     resultingStr=b''
     # print(cipherText)
-    for byt,charKeyF in zip(cipherText,charKeyString):
-        resultingStr+=bytes([(byt)^charKeyF])
+    for cypherByte,keyByte in zip(cipherText,charKeyString):
+        resultingStr+=bytes([cypherByte^keyByte])
     # print(resultingStr)
     english =codecs.encode(resultingStr, 'hex_codec')
 
-
-    return english
+    return resultingStr
+    #return english
 
 
 def EnglishDetector(yourEnglish, LetterFreq):
@@ -74,10 +73,17 @@ def EnglishDetector(yourEnglish, LetterFreq):
             k=LetterFreq.loc[j,'letters']
             if k == str(yourEnglish[i]): #compare each letter
                 yourEngFreq[j] +=1
-    print(yourEnglish)
-    print(yourEngFreq)
-    fullSum=yourEngFreq.sum()-yourEngFreq[:5].sum()
-    return(fullSum)
+    relFrequency = yourEngFreq/26
+    engScore =0
+    for i in range(26):
+        engScore += abs(relFrequency[i]-LetterFreq.loc[i,'Frequency'])
+    if yourEngFreq[23]>2:
+        engScore += 500
+
+    # print(yourEnglish)
+    # print(yourEngFreq)
+    fullSum=yourEngFreq.sum()-yourEngFreq[23]
+    return(engScore)
 
 
 if __name__ == '__main__':
