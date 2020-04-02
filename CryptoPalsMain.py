@@ -115,9 +115,13 @@ def EnglishDetector4(yourEnglish, LetterFreq):
         engScore += 500
     return(engScore)
 
-def repeatingXORencryption(KEY, text)
-    crypt  = KEY*len((text)/len(KEY))
-
+def repeatingXORencryption(KEY, text):
+    crypt = KEY*len(text)/len(KEY)
+    crypt = codecs.encode(crypt)
+    CypherText = codecs.encode(text)
+    for CryByt, CipByt in zip(crypt,CypherText):
+        x=1
+    return x
 
 
 if __name__ == '__main__':
