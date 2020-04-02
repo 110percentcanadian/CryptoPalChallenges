@@ -44,7 +44,7 @@ def SolveChallenge3Pls(HexCode,LetterFreq):
     return(bigStr,theKey)
 
 def singXorCypher(hexStr,singStr):
-    charKey=singStr*int(len(hexStr)/2)
+    charKey=singStr*(int(len(hexStr)/2))
     cipherText=codecs.decode(codecs.encode(hexStr),'hex_codec')
     charKeyString = codecs.encode(charKey)
     resultingStr=b''
@@ -116,13 +116,28 @@ def EnglishDetector4(yourEnglish, LetterFreq):
     return(engScore)
 
 def repeatingXORencryption(KEY, text):
-    crypt = KEY*len(text)/len(KEY)
-    crypt = codecs.encode(crypt)
-    CypherText = codecs.encode(text)
-    for CryByt, CipByt in zip(crypt,CypherText):
-        x=1
-    return x
+    crypt = KEY*int(len(text)/len(KEY))
+    for i in range(len(text)-len(crypt)):
+        crypt+=KEY[i]
+    crypt = codecs.encode(crypt)    #encodes into bytes
+    CypherText = codecs.encode(text) #encodes text into bytes
+    encodedText=b'' #initialize output bytes
+    for CryByt, CipByt in zip(crypt,CypherText): #byte wise compare
+        encodedText+= bytes([CryByt^CipByt])
+    encodedText=codecs.encode(encodedText,'hex_codec')  #encodes into hex for displaying later
+    return encodedText
 
+def repeatingXORDecryption(KEY,text):
+    CypherText = codecs.decode(text, 'hex_codec') #passed text is hex encoded from prev, converts out of hex
+    crypt = KEY*(int(len(text)/len(KEY)))  #generate crypt string
+    for i in range(len(text)-len(crypt)):
+        crypt+=KEY[i] #filling out odd numbered key
+    crypt = codecs.encode(crypt) #encode keystring to bytes
+    encodedText = b''  #initialize result
+    for CryByt, CipByt in zip(crypt,CypherText):  #byte wise XOR
+        encodedText+= bytes([CryByt^CipByt])
+    encodedText=codecs.decode(encodedText)   #decodes into string
+    return encodedText
 
 if __name__ == '__main__':
 
@@ -169,4 +184,9 @@ if __name__ == '__main__':
     #Challenge 5 Repeating XOR implementation leeetsss goooo
     KEY = 'ICE'
     cypherText = 'Burning \'em, if you ain\'t quick and nimble\nI go crazy when I hear a cymbal'
-    ecryptedPoem = repeatingXORencryption(KEY,cypherText)
+    encryptedPoem = repeatingXORencryption(KEY,cypherText)
+    print(encryptedPoem)
+    workOfArt = repeatingXORDecryption(KEY,encryptedPoem)
+    print(workOfArt)
+
+    #challenge 6, tha big kahuna
