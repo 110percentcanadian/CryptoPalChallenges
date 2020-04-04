@@ -139,6 +139,15 @@ def repeatingXORDecryption(KEY,text):
     encodedText=codecs.decode(encodedText)   #decodes into string
     return encodedText
 
+def HammingDistance(StringOne,StringTwo)
+    #encode both strings
+    ByteStringOne = codecs.encode(StringOne)
+    ByteStringTwo = codecs.encode(StringTwo)
+    for b1,b2 in zip(ByteStringOne,ByteStringTwo)
+        bytesTheSame=bytes([b1^b2])
+    #need to count the bits of the result....
+
+
 if __name__ == '__main__':
 
     #challenge 1
@@ -189,5 +198,7 @@ if __name__ == '__main__':
     workOfArt = repeatingXORDecryption(KEY,encryptedPoem)
     print(workOfArt)
 
-    #challenge 6, tha big kahuna
-
+    #challenge 6, tha big kahuna -differing bits is a XOR
+    testStrOne ="this is a test"
+    wakaWaka = "wokka wokka!!!"
+    HamHam = HammingDistance(testStrOne,wakaWaka)
