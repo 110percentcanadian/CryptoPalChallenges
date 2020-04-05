@@ -140,10 +140,30 @@ def repeatingXORDecryption(KEY,text):
     encodedText=codecs.decode(encodedText)   #decodes into string
     return encodedText
 
+def SolveChallenge6Pls(text):
+    CypherText=codecs.decode(codecs.encode(text),'base64_codec')#text hase been "base64's" according to cryptopal loc[0,'cyphers']
+    ScoreToBeat = 1000
+    KeySize=[0,0,0]
+    for i in range(2,40):
+        firstKeyString =CypherText[:i]
+        secondKeyString =CypherText[i:i*2]
+        hammerTime=HammingDistance(firstKeyString,secondKeyString)/i
+        if hammerTime<ScoreToBeat:
+            ScoreToBeat=hammerTime
+            KeySize[2]=KeySize[1]
+            KeySize[1]=KeySize[0]
+            KeySize[0]=i
+    return KeySize
+
 def HammingDistance(StringOne,StringTwo):
     #encode both strings
-    ByteStringOne = codecs.encode(StringOne)
-    ByteStringTwo = codecs.encode(StringTwo)
+    if type(StringOne) == str:
+        ByteStringOne = codecs.encode(StringOne)
+        ByteStringTwo = codecs.encode(StringTwo)
+    else:
+        ByteStringOne = StringOne
+        ByteStringTwo = StringTwo
+
     bytesTheSame=b''
     for b1,b2 in zip(ByteStringOne,ByteStringTwo):
         bytesTheSame+=bytes([b1^b2])
@@ -207,4 +227,8 @@ if __name__ == '__main__':
     testStrOne ="this is a test"
     wakaWaka = "wokka wokka!!!"
     HamHam = HammingDistance(testStrOne,wakaWaka)
-    print(HamHam)
+    #print(HamHam)
+    #cypherFile = pd.read_csv('repeatXORCrack.txt', names=["cyphers"], delimiter=",")
+    cypherFile = open('repeatXORCrack.txt')
+    theMessage=SolveChallenge6Pls(cypherFile.read())
+    print(theMessage)
