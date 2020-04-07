@@ -54,8 +54,6 @@ def singXorCypher(hexStr,singStr):
 
     return resultingStr
 
-
-
 def EnglishDetector(yourEnglish, LetterFreq):
     yourEngFreq = np.zeros(26,dtype=int)
     yourEnglish = str(yourEnglish)
@@ -87,8 +85,13 @@ def SolveChallenge4Pls(HexCode,LetterFreq):
     return(bigStr,theKey)
 
 def singXor4Cypher(hexStr,singStr):
+    if type(hexStr) == str:
+        hexStr = hexStr
+        cipherText = codecs.decode(codecs.encode(hexStr), 'hex_codec')
+    else:
+        cipherText = hexStr
+
     charKey=singStr*int(len(hexStr)/2)
-    cipherText=codecs.decode(codecs.encode(hexStr),'hex_codec')
     charKeyString = codecs.encode(charKey)
     resultingStr=b''
     for cypherByte,keyByte in zip(cipherText,charKeyString):
@@ -153,7 +156,28 @@ def SolveChallenge6Pls(text):
             KeySize[2]=KeySize[1]
             KeySize[1]=KeySize[0]
             KeySize[0]=i
-    return KeySize
+    cipherLength = len(CypherText)
+    Blocks = round(cipherLength/KeySize[0])
+
+    singCharBlock = np.zeros((KeySize[0]),dtype=bytearray)
+    singCharBlock[:] =b''
+    #better way to do this, iterate through cyphertext
+    k=0
+    for CypByte in zip(CypherText):
+        singCharBlock[k]+=bytes(CypByte)
+        k=k+1
+        if k== (KeySize[0]):
+            k=0
+    #assuming that worked, now have to find the single char crack for each block
+    LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
+    jumbEng=np.zeros(5,dtype=bytearray)
+    CypherKey=np.zeros(5,dtype=bytearray)
+
+    for i in range(KeySize[0]-1):
+        jumbEng[i],CypherKey[i]=SolveChallenge4Pls(singCharBlock[i],LetterFreq)
+    #assuming that worked, now need to decrypt the full message
+    theSuperSecret = repeatingXORDecryption(CypherKey, codecs.encode(CypherText,'hex_codec'))
+    return theSuperSecret
 
 def HammingDistance(StringOne,StringTwo):
     #encode both strings
