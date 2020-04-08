@@ -118,7 +118,7 @@ def EnglishDetector4(yourEnglish, LetterFreq):
         engScore += abs(relFrequency[i]-LetterFreq.loc[i,'Frequency'])
     if relFrequency[23]>1:
         engScore += 50*yourEngFreq[23]
-    engScore+=(StrLength-yourEngFreq.sum())*1
+    engScore+=(StrLength-yourEngFreq.sum())*.5
     return(engScore)
 
 def repeatingXORencryption(KEY, text):
@@ -136,9 +136,11 @@ def repeatingXORencryption(KEY, text):
 def repeatingXORDecryption(KEY,text):
     CypherText = codecs.decode(text, 'hex_codec') #passed text is hex encoded from prev, converts out of hex
     crypt = KEY*(int(len(text)/len(KEY)))  #generate crypt string
-    for i in range(len(text)-len(crypt)-1):
-        crypt+=KEY[i] #filling out odd numbered key
-    crypt = codecs.encode(crypt) #encode keystring to bytes
+    if (len(crypt)-len(CypherText))>0:
+        for i in range(len(text)-len(crypt)-1):
+            crypt+=bytes([KEY[i]]) #filling out odd numbered key
+    if type(crypt)== str:
+        crypt = codecs.encode(crypt) #encode keystring to bytes
     encodedText = b''  #initialize result
     for CryByt, CipByt in zip(crypt,CypherText):  #byte wise XOR
         encodedText+= bytes([CryByt^CipByt])
@@ -147,16 +149,17 @@ def repeatingXORDecryption(KEY,text):
 
 def SolveChallenge6Pls(text):
     CypherText=codecs.decode(codecs.encode(text),'base64_codec')#text hase been "base64's" according to cryptopal loc[0,'cyphers']
-    fileWriteTest = open("byteWriteTest", "wb")
-    fileWriteTest.write(CypherText)
-    fileWriteTest.close()
-    CypherKK=b''
-    for i in range(30):
-        CypherKK+=bytes(CypherText[i])
-
-    readTest = open("byteWriteTest","rb")
-    data = readTest.read()
-    woka = data
+    # fileWriteTest = open("byteWriteTest", "wb")
+    # fileWriteTest.write(CypherText)
+    # fileWriteTest.close()
+    # CypherKK=b''
+    # for i in range(30):
+    #
+    #     CypherKK+=bytes([CypherText[i]])
+    #
+    # readTest = open("byteWriteTest","rb")
+    # data = readTest.read()
+    # woka = data
     hammerTime=[]*38
     for i in range(2,40):
         KeyString1 =CypherText[:i]
@@ -183,25 +186,27 @@ def SolveChallenge6Pls(text):
         if k== (sizeOfKey):
             k=0
     #assuming that worked, now have to find the single char crack for each block
-    LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
+    # LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
     jumbEng=np.zeros(sizeOfKey,dtype=bytearray)
     CypherKey=np.zeros(sizeOfKey,dtype=bytearray)
 
     for i in range(sizeOfKey):
         jumbEng[i],CypherKey[i]=SolveChallenge4Pls(singCharBlock[i],LetterFreq)
         if i >3:
-            wute = CypherKey[i]
-            hell = wute
-    # #assuming that worked, now need to decrypt the full message
-    #np.savetxt("cypherKeyRepeatingXOR.csv", CypherKey, delimiter=",")
-    #CypherKey=np.genfromtxt("cypherKeyRepeatingXOR.csv", delimiter=",", skip_header=1, dtype=bytearray)
+            wute = bytes([CypherKey[i]])
+            hell = codecs.decode(wute)
+    #assuming that worked, now need to decrypt the full message
+
     CypherKK=b''
-    for i in range(sizeOfKey-1):
-        CypherKK+=bytes(CypherKey[i])
+    for i in range(sizeOfKey):
+        CypherKK+=bytes([CypherKey[i]])
     fileWrite = open("repeatingXORCypherKey", "wb")
     fileWrite.write(CypherKK)
     fileWrite.close()
 
+    skipTheWerk = open("repeatingXORCypherKey", "rb")
+    CypherKK = skipTheWerk.read()
+    skipTheWerk.close()
     theSuperSecret = repeatingXORDecryption(CypherKK, codecs.encode(CypherText,'hex_codec'))
     return theSuperSecret
 
