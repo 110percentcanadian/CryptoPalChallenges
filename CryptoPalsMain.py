@@ -5,6 +5,7 @@ import codecs
 import numpy as np
 import pandas as pd
 import bitstring as bitty
+import csv
 
 def hexString2Base64(wrkStr):
     hexString = wrkStr
@@ -71,7 +72,7 @@ def EnglishDetector(yourEnglish, LetterFreq):
     return(engScore)
 
 def SolveChallenge4Pls(HexCode,LetterFreq):
-    bigSum = 1000;
+    bigSum = 100000;
     bigStr=''
     theKey=0x00
     for hexNum in range(0x7F):
@@ -96,10 +97,10 @@ def singXor4Cypher(hexStr,singStr):
     resultingStr=b''
     for cypherByte,keyByte in zip(cipherText,charKeyString):
         j=int.from_bytes(bytes([cypherByte ^ keyByte]),"big")
-        if (j<0x7f) or j==0x20 or j==0x27:
+        if (j<=0x7f):
             resultingStr+=bytes([cypherByte^keyByte])
         else:
-            return 'nothing here sucka'
+            return 'nothing'
 
     return resultingStr
 
@@ -115,8 +116,9 @@ def EnglishDetector4(yourEnglish, LetterFreq):
     engScore =0
     for i in range(26):
         engScore += abs(relFrequency[i]-LetterFreq.loc[i,'Frequency'])
-    if yourEngFreq[23]>2:
-        engScore += 500
+    if relFrequency[23]>1:
+        engScore += 50*yourEngFreq[23]
+    engScore+=(StrLength-yourEngFreq.sum())*1
     return(engScore)
 
 def repeatingXORencryption(KEY, text):
@@ -134,7 +136,7 @@ def repeatingXORencryption(KEY, text):
 def repeatingXORDecryption(KEY,text):
     CypherText = codecs.decode(text, 'hex_codec') #passed text is hex encoded from prev, converts out of hex
     crypt = KEY*(int(len(text)/len(KEY)))  #generate crypt string
-    for i in range(len(text)-len(crypt)):
+    for i in range(len(text)-len(crypt)-1):
         crypt+=KEY[i] #filling out odd numbered key
     crypt = codecs.encode(crypt) #encode keystring to bytes
     encodedText = b''  #initialize result
@@ -145,38 +147,62 @@ def repeatingXORDecryption(KEY,text):
 
 def SolveChallenge6Pls(text):
     CypherText=codecs.decode(codecs.encode(text),'base64_codec')#text hase been "base64's" according to cryptopal loc[0,'cyphers']
-    ScoreToBeat = 1000
-    KeySize=[0,0,0]
-    for i in range(2,40):
-        firstKeyString =CypherText[:i]
-        secondKeyString =CypherText[i:i*2]
-        hammerTime=HammingDistance(firstKeyString,secondKeyString)/i
-        if hammerTime<ScoreToBeat:
-            ScoreToBeat=hammerTime
-            KeySize[2]=KeySize[1]
-            KeySize[1]=KeySize[0]
-            KeySize[0]=i
-    cipherLength = len(CypherText)
-    Blocks = round(cipherLength/KeySize[0])
+    fileWriteTest = open("byteWriteTest", "wb")
+    fileWriteTest.write(CypherText)
+    fileWriteTest.close()
+    CypherKK=b''
+    for i in range(30):
+        CypherKK+=bytes(CypherText[i])
 
-    singCharBlock = np.zeros((KeySize[0]),dtype=bytearray)
+    readTest = open("byteWriteTest","rb")
+    data = readTest.read()
+    woka = data
+    hammerTime=[]*38
+    for i in range(2,40):
+        KeyString1 =CypherText[:i]
+        KeyString2 =CypherText[i:i*2]
+        KeyString3=CypherText[i*2:i*3]
+        KeyString4=CypherText[i*3:i*4]
+        KeyString5=CypherText[i*4:i*5]
+        dist1=HammingDistance(KeyString1,KeyString2)/i
+        dist2=HammingDistance(KeyString2,KeyString3)/i
+        dist3=HammingDistance(KeyString3,KeyString4)/i
+        dist4=HammingDistance(KeyString4,KeyString5)/i
+        avgDist=(dist1+dist2+dist3+dist4)/4
+        hammerTime.append(avgDist)
+
+    KeySize =sorted(zip(hammerTime, range(2,40)), reverse=False)[:5]
+    sizeOfKey = ((KeySize[2][1]))
+    singCharBlock = np.zeros(sizeOfKey,dtype=bytearray)
     singCharBlock[:] =b''
     #better way to do this, iterate through cyphertext
     k=0
     for CypByte in zip(CypherText):
         singCharBlock[k]+=bytes(CypByte)
         k=k+1
-        if k== (KeySize[0]):
+        if k== (sizeOfKey):
             k=0
     #assuming that worked, now have to find the single char crack for each block
     LetterFreq = pd.read_csv('letterFrequency.csv', names = ["fuckyou","Frequency","empty","letters"], delimiter="," )
-    jumbEng=np.zeros(5,dtype=bytearray)
-    CypherKey=np.zeros(5,dtype=bytearray)
+    jumbEng=np.zeros(sizeOfKey,dtype=bytearray)
+    CypherKey=np.zeros(sizeOfKey,dtype=bytearray)
 
-    for i in range(KeySize[0]-1):
+    for i in range(sizeOfKey):
         jumbEng[i],CypherKey[i]=SolveChallenge4Pls(singCharBlock[i],LetterFreq)
-    #assuming that worked, now need to decrypt the full message
-    theSuperSecret = repeatingXORDecryption(CypherKey, codecs.encode(CypherText,'hex_codec'))
+        if i >3:
+            wute = CypherKey[i]
+            hell = wute
+    # #assuming that worked, now need to decrypt the full message
+    #np.savetxt("cypherKeyRepeatingXOR.csv", CypherKey, delimiter=",")
+    #CypherKey=np.genfromtxt("cypherKeyRepeatingXOR.csv", delimiter=",", skip_header=1, dtype=bytearray)
+    CypherKK=b''
+    for i in range(sizeOfKey-1):
+        CypherKK+=bytes(CypherKey[i])
+    fileWrite = open("repeatingXORCypherKey", "wb")
+    fileWrite.write(CypherKK)
+    fileWrite.close()
+
+    theSuperSecret = repeatingXORDecryption(CypherKK, codecs.encode(CypherText,'hex_codec'))
     return theSuperSecret
 
 def HammingDistance(StringOne,StringTwo):
