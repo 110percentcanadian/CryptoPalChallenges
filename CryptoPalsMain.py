@@ -5,6 +5,7 @@ import codecs
 import numpy as np
 import pandas as pd
 import bitstring as bitty
+from Crypto.Cipher import AES
 import csv
 
 def hexString2Base64(wrkStr):
@@ -284,6 +285,17 @@ if __name__ == '__main__':
     HamHam = HammingDistance(testStrOne,wakaWaka)
     #print(HamHam)
     #cypherFile = pd.read_csv('repeatXORCrack.txt', names=["cyphers"], delimiter=",")
-    cypherFile = open('repeatXORCrack.txt')
-    theMessage=SolveChallenge6Pls(cypherFile.read())
-    print(theMessage)
+    # cypherFile = open('repeatXORCrack.txt')
+    # theMessage=SolveChallenge6Pls(cypherFile.read())
+    # print(theMessage)
+
+
+    #Challenge 7 - AES-125 ECB encryption key use
+    CypherFile = open('AESTextCypher.txt')
+    CypherText = CypherFile.read()
+    CypherText = codecs.decode(codecs.encode(CypherText),'base64_codec')
+
+    CypherKey = 'YELLOW SUBMARINE'
+    NewCyph = AES.new(CypherKey,AES.MODE_ECB)
+    PlainText = NewCyph.decrypt(CypherText,newCyph)
+    print(PlainText)
