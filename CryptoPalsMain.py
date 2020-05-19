@@ -228,6 +228,52 @@ def HammingDistance(StringOne,StringTwo):
     bitDiff = bitDiff.count(1)
     return bitDiff
 
+def LetterReplacer(SouthString,LetterFreq):
+    Paragraph = EnglishDetectorSouth(SouthString,LetterFreq)
+    return Paragraph
+
+
+def EnglishDetectorSouth(yourEnglish, LetterFreq):
+    yourEngFreq = np.zeros(26, dtype=int)
+    yourEnglish = str(yourEnglish)
+    StrLength = len(yourEnglish)
+    for i in range(StrLength):  # goes through numbers for length of string
+        for j in range(25):  # goes through each letter of alphabet
+            if LetterFreq.loc[j, 'letters'] == str(yourEnglish[i]):  # compare each letter
+                yourEngFreq[j] += 1
+    tot = sum(yourEngFreq)
+    debug=len(yourEnglish)
+    totBench = sum(LetterFreq['Frequency'])
+    ratio=tot/debug
+    relFrequency = yourEngFreq / (len(yourEnglish)*ratio)
+    j=0
+    sumofRel = sum(relFrequency)
+    engScore = 0
+    # for i in range(26):
+    #     engScore += abs(relFrequency[i] - LetterFreq.loc[i, 'Frequency'])
+    #     if relFrequency[23] > 1:
+    #         engScore += 50 * yourEngFreq[23]
+    #         engScore += (StrLength - yourEngFreq.sum()) * .5
+    # Selecting letters
+    solution = []
+    LetterDestroyer = LetterFreq
+    relDest = relFrequency
+    for i in range(25):
+        #relative frequency of each letter
+        pat = LetterDestroyer['Frequency']
+        MaxLetter = LetterDestroyer['Frequency'].index(max(LetterDestroyer['Frequency']))
+        #finds difference in relative frequencies
+        #diffinFreq = [abs(relFreq - Freq) for relFreq in relFrequency]
+        Letter = relDest.index(max(relDest))
+        #chooses correct letter for this letter ie a is R
+        #CorrectSample = diffinFreq.index(min(diffinFreq))
+        intermed = [LetterDestroyer.iloc[Letter,3], LetterDestroyer.iloc[MaxLetter, 3]]
+        solution.append(intermed)
+        LetterDestroyer.iloc[MaxLetter, 3] = []
+        relDest.iloc[Letter]=[]
+
+    return (engScore, relFrequency,solution)
+
 
 if __name__ == '__main__':
 
@@ -280,9 +326,9 @@ if __name__ == '__main__':
     # print(workOfArt)
 
     #challenge 6, tha big kahuna -differing bits is a XOR
-    testStrOne ="this is a test"
-    wakaWaka = "wokka wokka!!!"
-    HamHam = HammingDistance(testStrOne,wakaWaka)
+    # testStrOne ="this is a test"
+    # wakaWaka = "wokka wokka!!!"
+    # HamHam = HammingDistance(testStrOne,wakaWaka)
     #print(HamHam)
     #cypherFile = pd.read_csv('repeatXORCrack.txt', names=["cyphers"], delimiter=",")
     # cypherFile = open('repeatXORCrack.txt')
@@ -291,11 +337,23 @@ if __name__ == '__main__':
 
 
     #Challenge 7 - AES-125 ECB encryption key use
-    CypherFile = open('AESTextCypher.txt')
-    CypherText = CypherFile.read()
-    CypherText = codecs.decode(codecs.encode(CypherText),'base64_codec')
+    # CypherFile = open('AESTextCypher.txt')
+    # CypherText = CypherFile.read()
+    # CypherText = codecs.decode(codecs.encode(CypherText),'base64_codec')
+    #
+    # CypherKey = 'YELLOW SUBMARINE'
+    # CypherKey=codecs.encode(CypherKey)
+    # NewCypher = AES.new(CypherKey, AES.MODE_ECB)
+    # PlainText = NewCypher.decrypt(CypherText)
+    # print(PlainText)
 
-    CypherKey = 'YELLOW SUBMARINE'
-    NewCyph = AES.new(CypherKey,AES.MODE_ECB)
-    PlainText = NewCyph.decrypt(CypherText,newCyph)
-    print(PlainText)
+    #Challenge 8 - Find the AES-125 ECB Encrypted block
+    # cypherArray = pd.read_csv('AESfindTheEncodedBlock.txt', names=["cyphers"], delimiter=",")
+    # for i in range(cypherArray.shape[0]):
+    #     cypherArray.loc[i,'cyphers'] = codecs.decode(codecs.encode(cypherArray.loc[i, 'cyphers']),'hex_codec')
+    # print(cypherArray.loc[0,'cyphers'])
+
+    #Southampton Crypto Challenge
+    CypherFile = open('southamptonChallenge.txt')
+    CypherText = CypherFile.read()
+    EnglishDetectorSouth(CypherText, LetterFreq)
