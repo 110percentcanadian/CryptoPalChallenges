@@ -5,7 +5,7 @@ import codecs
 import numpy as np
 import pandas as pd
 import bitstring as bitty
-from Crypto.Cipher import AES
+from crypto.Cipher import AES
 import csv
 
 def hexString2Base64(wrkStr):
