@@ -143,19 +143,46 @@ def encryptionModeOracle(cypherText):
         mode = 'ECB'
     return 'Oracle Says Encryption Mode is: '+ mode, repeatcounter, CypherCode
 
-def bufferEncryptECB(buff, plaintext, ):
+def bufferEncryptECB(buff, plaintext, key ):
     # takes buff, joins with plainText, encrypts under ECB
     # assume all bytes objects
-    paddedText = plaintext
-    Blocklength = len(plaintext)
+    paddedText = buff[:]+plaintext[:]
+    Blocklength = len(paddedText)
+    #testtest =b'A' *(320)
     if (16 - Blocklength % 16>0):
         fillSize = 16 - Blocklength % 16
         bytechar = [4] * fillSize
         padChar = bytes(bytechar)
-        paddedText = plaintext + padChar
+        paddedText = paddedText + padChar
     NewCypher = AES.new(key, AES.MODE_ECB)
+    cypherTextwPad=NewCypher.encrypt(paddedText)
+    #debug = NewCypher.encrypt(testtest)
+    return cypherTextwPad
 
-    return NewCypher
+def ECBBlockSize(buffBase,unknownString,unknownKey):
+    myStringBuffBase = buffBase
+    solved = False
+    i = 1
+    while solved is not True:
+        buffer = i*myStringBuffBase
+        encryptResult = bufferEncryptECB(buffer,unknownString,unknownKey)
+        # Something about this doesnt behave as expected - first char being A does not always come out the same
+        # likely have to compare full blocks???
+        debug = encryptResult[i:i+1]
+        debug2 = encryptResult[0:1]
+        debug3 = encryptResult[0:i+1]
+        if encryptResult[i:i+1] == encryptResult[0:1]:
+            #its probably got the correct length, but increase by one and double check
+            buffer = i*2*myStringBuffBase
+            encryptResult = bufferEncryptECB(buffer, unknownString, unknownKey)
+            if encryptResult[i:i+2]==encryptResult[0:2]:
+                print("blockSize is "+ str(i))
+                solved =True
+        if i> 100:
+            print("your function isnt working ")
+            solved =True
+        i+=1
+    return i
 
 if __name__ == '__main__':
     #csvImport some letters
@@ -219,6 +246,12 @@ if __name__ == '__main__':
 
     # Set 2 Challenge 12
     unknownKey = io.open('secretRandomKey.txt','rb').read()
+    unknownString = io.open('set2ch12.txt','rb').read()
+    # Steps according to cryptoPals
+    # 1 - determin cipher block size
+    #increase buff until repeat appears in the ciphertext?
+    myStringBuffBase = b'A'
+    blockSize = ECBBlockSize(myStringBuffBase, unknownString,unknownKey)
 
 
 
